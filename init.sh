@@ -61,21 +61,31 @@ AllSamples=""
 for ((Sample=1; Sample <= $ArgCount; Sample++))
 do
 	SampleName="sample${Sample}"
-	LocalFile="${SampleName}.txt"
-    LongFile="${ProblemName}/${LocalFile}"
-    touch ${LongFile}
-    vim ${LongFile}
 
-	AllFiles="${AllFiles} ${LocalFile}"
+	LocalResultFile="${SampleName}.out"
+	LocalSampleFile="${SampleName}.txt"
+
+	LongResultFile="${ProblemName}/${LocalResultFile}"
+	LongSampleFile="${ProblemName}/${LocalSampleFile}"
+
+    touch ${LongResultFile}
+    touch ${LongSampleFile}
+
+    vim ${LongSampleFile}
+    vim ${LongResultFile}
+
+	AllFiles="${AllFiles} ${LocalSampleFile}"
 	AllSamples="${AllSamples} ${SampleName}"
 
 	cat >> ${ProblemName}/Makefile << EOF
 
-sample${Sample}: ${ProblemName} ${LocalFile}
-	@echo ---------------------------
-	@echo " ${LocalFile}"
-	@echo ---------------------------
-	@./${ProblemName} < ${LocalFile}
+sample${Sample}: ${ProblemName}
+	@echo -----------------------------------------------
+	@echo " ${LocalSampleFile} (actual, expected)"
+	@echo -----------------------------------------------
+	@./${ProblemName} < ${LocalSampleFile}
+	@echo ---
+	@cat ${LocalResultFile}
 	@echo
 EOF
 done
@@ -83,9 +93,9 @@ done
 cat >> ${ProblemName}/Makefile << EOF
 
 test: ${ProblemName}${AllSamples}
-	@echo ---------------------------
+	@echo -----------------------------------------------
 	@echo " All Tests Finished"
-	@echo ---------------------------
+	@echo -----------------------------------------------
 
 .PHONY: all test${AllSamples}
 
