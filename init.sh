@@ -7,21 +7,21 @@ SampleCount=1
 
 if [ $ArgCount == 0 ]
 then
-    echo "Must provide problem name, and optionally the number of sample files."
-    exit -1
+	echo "Must provide problem name, and optionally the number of sample files."
+	exit -1
 fi
 
 ProblemName=$1
 
 if [ $ProblemName == $ScriptName ]
 then
-    echo "You cannot name your problem after this script."
-    exit -1
+	echo "You cannot name your problem after this script."
+	exit -1
 fi
 
 if [ $ArgCount == 2 ]
 then
-    ArgCount=$2
+	ArgCount=$2
 fi
 
 mkdir $ProblemName
@@ -31,15 +31,15 @@ cat > ${ProblemName}/${ProblemName}.cpp << EOF
 
 int main(int argc, char **argv)
 {
-    int testcases = 1;
-    std::cin >> testcases;
+	int testcases = 1;
+	std::cin >> testcases;
 
-    while (testcases--)
-    {
-        std::cout << "Hello, Kattis." << std::endl;
-    }
+	while (testcases--)
+	{
+		std::cout << "Hello, Kattis." << std::endl;
+	}
 
-    return 0;
+	return 0;
 }
 EOF
 
@@ -68,11 +68,11 @@ do
 	LongResultFile="${ProblemName}/${LocalResultFile}"
 	LongSampleFile="${ProblemName}/${LocalSampleFile}"
 
-    touch ${LongResultFile}
-    touch ${LongSampleFile}
+	touch ${LongResultFile}
+	touch ${LongSampleFile}
 
-    vim ${LongSampleFile}
-    vim ${LongResultFile}
+	vim ${LongSampleFile}
+	vim ${LongResultFile}
 
 	AllFiles="${AllFiles} ${LocalSampleFile}"
 	AllSamples="${AllSamples} ${SampleName}"
