@@ -86,7 +86,6 @@ sample${Sample}: ${ProblemName}
 	@./${ProblemName} < ${LocalSampleFile}
 	@echo ---
 	@cat ${LocalResultFile}
-	@echo
 EOF
 done
 
