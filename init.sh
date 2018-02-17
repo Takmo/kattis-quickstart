@@ -49,7 +49,7 @@ cat > ${ProblemName}/Makefile << EOF
 all: ${ProblemName} test
 
 clean:
-	rm -f hello
+	rm -f ${ProblemName}
 
 ${ProblemName}: ${ProblemName}.cpp
 	g++ -Wall -g --std=c++11 ${ProblemName}.cpp -o ${ProblemName}
