@@ -2,30 +2,49 @@
 
 KattisEnvironment="https://tamu.kattis.com/"
 
-# we need at least one argument (problem name) but can also take the number of sample files
+# verify correct number of arguments
 ArgCount=$#
-if [ $ArgCount == 0 ]
-then
-	echo "Must provide problem name, and optionally the number of sample files."
+if [ $ArgCount -lt 2 ]; then
+	echo "Must provide problem name, programming language, and optionally the number of samples."
+	echo "Valid programming languages: cpp, py2, py3"
 	exit -1
 fi
 
 # make sure not to name the problem after the script - bad things might happen
 ProblemName=$1
 ScriptName=`basename "$0"`
-if [ $ProblemName == $ScriptName ]
-then
+if [ $ProblemName == $ScriptName ]; then
 	echo "You cannot name your problem after this script."
 	exit -1
 fi
 
+# setup language as necessary
+Language=$2
+CodeFile=""
+BuildCommand=""
+BaseCode=""
+if [ ${Language} = "cpp" ]; then
+	CodeFile="${ProblemName}.cpp"
+	BuildCommand="g++ -Wall -g --std=c++11 ${CodeFile} -o ${ProblemName}"
+
+elif [ ${Language} = "py2" ]; then
+	CodeFile="${ProblemName}.py"
+	BuildCommand="@echo \"python2 ${CodeFile}\" >> ${ProblemName}; chmod +x ${ProblemName}"
+
+elif [ ${Language} = "py3" ]; then
+	CodeFile="${ProblemName}.py"
+	BuildCommand="@echo \"python3 ${CodeFile}\" >> ${ProblemName}; chmod +x ${ProblemName}"
+
+else
+	echo "This script only supports these languages: cpp, py2, py3"
+	exit -1
+fi
+
 # if we need to paste in samples, do that
-if [ $ArgCount == 2 ]
-then
+if [ $ArgCount -gt 2 ]; then
 	mkdir $ProblemName
-	SampleCount=$2
-	for ((Sample=1; Sample <= $SampleCount; Sample++))
-	do
+	SampleCount=$3
+	for ((Sample=1; Sample <= $SampleCount; Sample++)); do
 		SampleName="sample${Sample}"
 
 		LocalResultFile="${ProblemName}_${SampleName}.ans"
@@ -43,14 +62,12 @@ then
 fi
 
 # otherwise, download them ourselves
-if [ $ArgCount == 1 ]
-then
+if [ $ArgCount == 2 ]; then
 	SamplesUrl="${KattisEnvironment}problems/${ProblemName}/file/statement/samples.zip"
 	wget ${SamplesUrl} &> /dev/null
 
-	if [ ! -f "samples.zip" ]
-	then
-		echo "Could not download samples for \"${ProblemName}\" - are you sure it exists?"
+	if [ ! -f "samples.zip" ]; then
+		echo "Could not download samples for ${ProblemName} - are you sure it exists?"
 		exit -1
 	fi
 
@@ -70,8 +87,8 @@ all: ${ProblemName} test
 clean:
 	rm -f ${ProblemName}
 
-${ProblemName}: ${ProblemName}.cpp
-	g++ -Wall -g --std=c++11 ${ProblemName}.cpp -o ${ProblemName}
+${ProblemName}: ${CodeFile}
+	${BuildCommand}
 EOF
 
 # generate the testcases for each test input file
@@ -97,7 +114,7 @@ ${SampleName}: ${ProblemName}
 EOF
 done
 
-# generate the final generator for running all tests
+# create the final generator for running all tests
 cat >> ${ProblemName}/Makefile << EOF
 
 test: ${ProblemName}${AllSamples}
@@ -109,23 +126,42 @@ test: ${ProblemName}${AllSamples}
 
 EOF
 
-# put a friendly little starter file in the directory :)
-cat > ${ProblemName}/${ProblemName}.cpp << EOF
+# create the starter C++ file
+cat > starter.cpp << EOF
 #include <iostream>
+
+using namespace std;
 
 int main(int argc, char **argv)
 {
 	int testcases = 1;
-	std::cin >> testcases;
+	cin >> testcases;
 
 	while (testcases--)
 	{
-		std::cout << "Hello, Kattis." << std::endl;
+		cout << "Hello, Kattis." << endl;
 	}
 
 	return 0;
 }
 EOF
+
+# create the starter Python file
+cat > starter.py << EOF
+import sys
+
+for line in sys.stdin:
+	print(line)
+EOF
+
+# set starter file based on language
+if [ ${Language} = "cpp" ]; then
+	mv starter.cpp ${ProblemName}/${CodeFile}
+	rm starter.py
+else
+	mv starter.py ${ProblemName}/${CodeFile}
+	rm starter.cpp
+fi
 
 # all done!
 echo "Initialized problem ${ProblemName}..."
