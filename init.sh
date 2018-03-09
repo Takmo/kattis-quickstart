@@ -46,8 +46,15 @@ fi
 if [ $ArgCount == 1 ]
 then
 	SamplesUrl="${KattisEnvironment}problems/${ProblemName}/file/statement/samples.zip"
-	wget ${SamplesUrl}
-	unzip "samples.zip" -d ${ProblemName}
+	wget ${SamplesUrl} &> /dev/null
+
+	if [ ! -f "samples.zip" ]
+	then
+		echo "Could not download samples for \"${ProblemName}\" - are you sure it exists?"
+		exit -1
+	fi
+
+	unzip "samples.zip" -d ${ProblemName} &> /dev/null
 	rm "samples.zip"
 fi
 
