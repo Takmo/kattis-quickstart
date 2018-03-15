@@ -5,7 +5,7 @@ KattisEnvironment="https://tamu.kattis.com/"
 # verify correct number of arguments
 ArgCount=$#
 if [ $ArgCount -lt 2 ]; then
-	echo "Must provide problem name, programming language, and optionally the number of samples."
+	echo "Must provide problem name and programming language."
 	echo "Valid programming languages: cpp, py2, py3"
 	exit -1
 fi
@@ -40,38 +40,19 @@ else
 	exit -1
 fi
 
-# if we need to paste in samples, do that
-if [ $ArgCount -gt 2 ]; then
-	mkdir $ProblemName
-	SampleCount=$3
-	for ((Sample=1; Sample <= $SampleCount; Sample++)); do
-		SampleName="sample${Sample}"
-
-		LocalResultFile="${ProblemName}_${SampleName}.ans"
-		LocalSampleFile="${ProblemName}_${SampleName}.in"
-
-		LongResultFile="${ProblemName}/${LocalResultFile}"
-		LongSampleFile="${ProblemName}/${LocalSampleFile}"
-
-		touch ${LongResultFile}
-		touch ${LongSampleFile}
-
-		vim ${LongSampleFile}
-		vim ${LongResultFile}
-	done
-fi
-
-# otherwise, download them ourselves
+# download the sample files
 if [ $ArgCount == 2 ]; then
 	SamplesUrl="${KattisEnvironment}problems/${ProblemName}/file/statement/samples.zip"
 	wget ${SamplesUrl} &> /dev/null
 
 	if [ ! -f "samples.zip" ]; then
+		rm ${ClientProgram} &> /dev/null
 		echo "Could not download samples for ${ProblemName} - are you sure it exists?"
 		exit -1
 	fi
 
 	unzip "samples.zip" -d ${ProblemName} &> /dev/null
+	mv "${ClientProgram}" "${ProblemName}" &> /dev/null
 	rm "samples.zip"
 fi
 
