@@ -78,7 +78,7 @@ AllSamples=""
 for LongInputFile in "${InputFiles[@]}"; do
 	InputFile=`basename ${LongInputFile}`
 	OutputFile=`echo ${InputFile} | sed "s/\.in/\.ans/g"`
-	SampleName=`echo ${InputFile} | sed "s/\.in//g"`
+	SampleName=`echo ${InputFile}.run`
 
 	AllFiles="${AllFiles} ${InputFile}"
 	AllSamples="${AllSamples} ${SampleName}"
