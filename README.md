@@ -8,20 +8,12 @@ just download init.sh. Oh, and make sure it's executable.
 
 Command usage looks like this...
 
-`./init.sh [problem_name: required] [language: required] [number of sample files: optional]`
+`./init.sh [problem_name] [language]`
 
 The language can either be `cpp`, `py2`, or `py3`.
 
-If you don't specify a number of samples files, the script will automatically
-download sample files from the Kattis website.
-
-If sample files are specified, you will be asked to paste the following
-information for each sample file.:
-
-1. The Sample Input
-
-2. The Sample Output
-
-In either case, this script will automatically setup a folder named after
-the problem with a starter code file and a Makefile configured to test against
-all of the associated problem samples.
+This script will automatically download the sample inputs/outputs for
+`[problem_name]` and set up a folder with a basic code file (in either
+C++, Python2, or Python3) and a Makefile that automatically builds your code,
+runs it with the sample inputs, and shows your output compared to the
+expected outputs.
